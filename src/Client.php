@@ -69,13 +69,16 @@ class Client implements ClientInterface
 
         if (count($message->getEncryptionHeaders()) > 0) {
             $headers = array_merge($headers, $message->getEncryptionHeaders());
+            $body = $message->getEncryptedData();
+        } else {
+            $body = json_encode($message);
         }
 
         return $this->guzzleClient->post(
             $this->getApiUrl(),
             [
                 'headers' => $headers,
-                'body' => $message->getEncryptedData(),
+                'body' => $body,
             ]
         );
     }
