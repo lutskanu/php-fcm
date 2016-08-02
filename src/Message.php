@@ -13,6 +13,8 @@ class Message implements \JsonSerializable
     const PRIORITY_HIGH = 'high',
         PRIORITY_NORMAL = 'normal';
 
+    private $encryptionHeaders = [];
+
     private $notification;
     private $collapseKey;
 
@@ -122,6 +124,39 @@ class Message implements \JsonSerializable
     {
         $this->data = $data;
         return $this;
+    }
+
+    /**
+     * Web Push notifications requires payload encryption
+     * @see https://developers.google.com/web/updates/2016/03/web-push-encryption
+     * @see https://tools.ietf.org/html/draft-ietf-webpush-encryption-01
+     * Payload encryption and headers generation should be outside this method.
+     *
+     * @param string $payload Encrypted payload
+     * @param string $cryptoKey Serber public key
+     * @param string $encryption Encryption salt
+     * @param string $contentEncoding Content encoding algorithm
+     *
+     * @return \paragraph1\phpFCM\Message
+     */
+    public function setEncryptedData($payload, $cryptoKey, $encryption, $contentEncoding = 'aesgcm')
+    {
+        $this->encryptionHeaders['Encryption'] = $cryptoKey;
+        $this->encryptionHeaders['Crypto-Key'] = $encryption;
+        $this->encryptionHeaders['Content-Encoding'] = $contentEncoding;
+        $this->encryptionHeaders['TTL'] = '0';
+
+        $this->data = $payload;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEncryptionHeaders()
+    {
+        return $this->encryptionHeaders;
     }
 
     public function jsonSerialize()

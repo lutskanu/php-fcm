@@ -62,14 +62,20 @@ class Client implements ClientInterface
      */
     public function send(Message $message)
     {
+        $headers = [
+            'Authorization' => sprintf('key=%s', $this->apiKey),
+            'Content-Type' => 'application/json',
+        ];
+
+        if (count($message->getEncryptionHeaders()) > 0) {
+            $headers = array_merge($headers, $message->getEncryptionHeaders());
+        }
+
         return $this->guzzleClient->post(
             $this->getApiUrl(),
             [
-                'headers' => [
-                    'Authorization' => sprintf('key=%s', $this->apiKey),
-                    'Content-Type' => 'application/json'
-                ],
-                'body' => json_encode($message)
+                'headers' => $headers,
+                'body' => json_encode($message),
             ]
         );
     }
