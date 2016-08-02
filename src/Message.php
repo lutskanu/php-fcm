@@ -14,6 +14,7 @@ class Message implements \JsonSerializable
         PRIORITY_NORMAL = 'normal';
 
     private $encryptionHeaders = [];
+    private $encryptedData;
 
     private $notification;
     private $collapseKey;
@@ -146,7 +147,7 @@ class Message implements \JsonSerializable
         $this->encryptionHeaders['Content-Encoding'] = $contentEncoding;
         $this->encryptionHeaders['TTL'] = '0';
 
-        $this->data = $payload;
+        $this->encryptedData = $payload;
 
         return $this;
     }
@@ -157,6 +158,14 @@ class Message implements \JsonSerializable
     public function getEncryptionHeaders()
     {
         return $this->encryptionHeaders;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEncryptedData()
+    {
+        return $this->encryptedData;
     }
 
     public function jsonSerialize()

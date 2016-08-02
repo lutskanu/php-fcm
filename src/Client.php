@@ -75,7 +75,7 @@ class Client implements ClientInterface
             $this->getApiUrl(),
             [
                 'headers' => $headers,
-                'body' => json_encode($message),
+                'body' => $message->getEncryptedData(),
             ]
         );
     }
